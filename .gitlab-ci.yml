@@ -1,0 +1,95 @@
+stages:
+  - create_table
+
+before_script:
+  - echo export vault keys
+  - echo export vault keys from hashicarp vault
+
+.dev_common:
+  #image: amazon/aws-cli
+  variables:
+    ENV: dev
+    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID_DEV}
+    AWS_DEFAULT_REGION: "eu-central-1"
+    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY_DEV}
+
+.test_common:
+  image: amazon/aws-cli
+  variables:
+    ENV: dev
+    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID_TEST}
+    AWS_DEFAULT_REGION: "eu-central-1"
+    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY_TEST}
+
+.stage_common:
+  image: amazon/aws-cli
+  variables:
+    ENV: dev
+    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID_STAGE}
+    AWS_DEFAULT_REGION: "eu-central-1"
+    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY_STAGE}
+
+.prod_common:
+  image: amazon/aws-cli
+  variables:
+    ENV: dev
+    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID_PROD}
+    AWS_DEFAULT_REGION: "eu-central-1"
+    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY_PROD}
+    
+create_table_dev:
+  extends: .dev_common
+  stage: create_table
+  #image: amazon/aws-cli
+  variables:
+    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID_DEV}
+    AWS_SECRET_ACCESS_KEY: "eu-central-1"
+    AWS_DEFAULT_REGION: ${AWS_SECRET_ACCESS_KEY_DEV}
+  script:
+    - echo create new table for specific env
+    - echo ${AWS_ACCESS_KEY_ID}
+    - echo ${AWS_SECRET_ACCESS_KEY_DEV}
+
+  only:
+    - /dev_release_[0-9]+(?:.[0-9]+)+$/
+    - develop
+    - feature/testing_poc
+
+create_table_test:
+  extends: .test_common
+  stage: create_table
+  image: amazon/aws-cli
+  variables:
+    AWS_ACCESS_KEY_ID: "your_access_key_id"
+    AWS_SECRET_ACCESS_KEY: "your_secret_access_key"
+    AWS_DEFAULT_REGION: "your_aws_region"
+  script:
+    - echo create new table for specific env
+  only:
+    - /test_release_[0-9]+(?:.[0-9]+)+$/
+
+create_table_stage:
+  extends: .stage_common
+  stage: create_table
+  image: amazon/aws-cli
+  variables:
+    AWS_ACCESS_KEY_ID: "your_access_key_id"
+    AWS_SECRET_ACCESS_KEY: "your_secret_access_key"
+    AWS_DEFAULT_REGION: "your_aws_region"
+  script:
+    - echo create new table for specific env
+  only:
+    - /stage_release_[0-9]+(?:.[0-9]+)+$/
+
+create_table_prod:
+  extends: .prod_common
+  stage: create_table
+  image: amazon/aws-cli
+  variables:
+    AWS_ACCESS_KEY_ID: "your_access_key_id"
+    AWS_SECRET_ACCESS_KEY: "your_secret_access_key"
+    AWS_DEFAULT_REGION: "your_aws_region"
+  script:
+    - echo create new table for specific env
+  only:
+    - /prod_release_[0-9]+(?:.[0-9]+)+$/
